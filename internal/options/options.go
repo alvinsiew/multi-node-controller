@@ -179,7 +179,7 @@ func help() string {
 	For production 
 		replace web > web-prd and app > app-prd
 
-	Production does not support -toggle and -c commandline`
+	Production does not support -toggle`
 	return helpMessage
 }
 
