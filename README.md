@@ -10,9 +10,16 @@ Multi-node-controller is a tool for issuing a command to multiple ec2 instances.
 
 You now good to go!
 
+## prerequisite
+
+Setup your AWS_PROFILE
+https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html
+
 ## Command Usage
 
 ```bash
+export AWS_PROFILE=<PROFILE NAME>
+
 Usage:
         To issue commands:
                 mnc web -c < commandline >
