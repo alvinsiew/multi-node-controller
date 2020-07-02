@@ -1,0 +1,3 @@
+conf:
+- userid: "ec2-user"
+- privatekey: "/Users/alvinsiew/.ssh/uat.msf-csg.pem"
