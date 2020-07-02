@@ -19,7 +19,7 @@ type Command struct {
 	subNameII string
 }
 
-// WebCommand Contain flag command for web ec2 instances
+// WebCommand Contain flag command for uat web ec2 instances
 func WebCommand() *Command {
 	gc := &Command{
 		fs: flag.NewFlagSet("web", flag.ContinueOnError),
@@ -31,6 +31,7 @@ func WebCommand() *Command {
 	return gc
 }
 
+// WebProdCommand Contain flag command for prod web ec2 instances
 func WebProdCommand() *Command {
 	gc := &Command{
 		fs: flag.NewFlagSet("web-prd", flag.ContinueOnError),
@@ -42,7 +43,7 @@ func WebProdCommand() *Command {
 	return gc
 }
 
-// AppCommand Contain flag command for application ec2 instances
+// AppCommand Contain flag command for application uat ec2 instances
 func AppCommand() *Command {
 	gc := &Command{
 		fs: flag.NewFlagSet("app", flag.ContinueOnError),
@@ -55,6 +56,7 @@ func AppCommand() *Command {
 	return gc
 }
 
+// AppProdCommand Contain flag command for application prod ec2 instances
 func AppProdCommand() *Command {
 	gc := &Command{
 		fs: flag.NewFlagSet("app-prd", flag.ContinueOnError),
@@ -66,6 +68,7 @@ func AppProdCommand() *Command {
 	return gc
 }
 
+// HelpCommand for help paramter
 func HelpCommand() *Command {
 	gc := &Command{
 		fs: flag.NewFlagSet("help", flag.ContinueOnError),
