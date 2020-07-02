@@ -16,6 +16,7 @@ type ConfigSSH struct {
 	PrivateKeyProd string `yaml:"privatekeyprod"`
 }
 
+// Config struct for mnc config
 type Config struct {
 	Conf []ConfigSSH `yaml:"conf"`
 }
