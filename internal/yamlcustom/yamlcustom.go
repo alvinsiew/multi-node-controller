@@ -11,6 +11,7 @@ import (
 type ConfigSSH struct {
 	UserID     string `yaml:"userid"`
 	PrivateKey string `yaml:"privatekey"`
+	PrivateKeyProd string `yaml:"privatekeyprod"`
 }
 
 type Config struct {

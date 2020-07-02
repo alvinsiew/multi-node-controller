@@ -12,8 +12,8 @@ import (
 )
 
 
-// getKey to read private key
-func getKey() []uint8 {
+// GetKeyUat to read UAT private key
+func GetKeyUat() []uint8 {
 	conf := yamlcustom.ParseYAML()
 	
 	key, err := ioutil.ReadFile(conf.Conf[1].PrivateKey)
@@ -24,12 +24,24 @@ func getKey() []uint8 {
 	return key
 }
 
+// GetKeyProd to read PROD private key
+func GetKeyProd() []uint8 {
+	conf := yamlcustom.ParseYAML()
+	
+	key, err := ioutil.ReadFile(conf.Conf[2].PrivateKeyProd)
+	if err != nil {
+		log.Fatalf("unable to read private key: %v", err)
+	}
+
+	return key
+}
+
 // RemoteCommand to execute command to multiply nodes
-func RemoteCommand(ip string, cmd string) {
+func RemoteCommand(ip string, cmd string,getKey []uint8) {
 	// Create the Signer for this private key.
 	conf := yamlcustom.ParseYAML()
 
-	signer, err := ssh.ParsePrivateKey(getKey())
+	signer, err := ssh.ParsePrivateKey(getKey)
 	if err != nil {
 		log.Fatalf("unable to parse private key: %v", err)
 	}

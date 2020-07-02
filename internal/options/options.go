@@ -91,25 +91,25 @@ func (g *Command) Parameter() {
 		if g.subName == true {
 			ListIP("ec2*uat*web*")
 		} else {
-			RemoteCMD("ec2*uat*web*", g)
+			RemoteCMD("ec2*uat*web*", g, sshcmd.GetKeyUat())
 		} 
 	} else if g.Name() == "app" {
 		if g.subName == true {
 			ListIP("ec2*uat*app*")
 		} else {
-			RemoteCMD("ec2*uat*app*", g)
+			RemoteCMD("ec2*uat*app*", g, sshcmd.GetKeyUat())
 		} 
 	} else if g.Name() == "web-prd" {
 		if g.subName == true {
 			ListIP("ec2*prd*web*")
 		} else {
-			RemoteCMD("ec2*prd*web*", g)
+			RemoteCMD("ec2*prd*web*", g, sshcmd.GetKeyProd())
 		} 		
 	} else if g.Name() == "app-prd" {
 		if g.subName == true {
-			ListIP("ec2*uat*app*")
+			ListIP("ec2*prd*app*")
 		} else {
-			RemoteCMD("ec2*uat*app*", g)
+			RemoteCMD("ec2*prd*app*", g, sshcmd.GetKeyProd())
 		} 
 	} else if g.Name() == "help" {
 		fmt.Println(help())
@@ -129,7 +129,7 @@ func ListIP(cmd string) {
 }
 
 // RemoteCMD will issue command to filter VMs
-func RemoteCMD(cmd string, g *Command) {
+func RemoteCMD(cmd string, g *Command, getKey []uint8) {
 
 	command := g.name
 
@@ -146,7 +146,7 @@ func RemoteCMD(cmd string, g *Command) {
 
 	for _, i := range ipAdr {
 		fmt.Println(name[n])
-		sshcmd.RemoteCommand(i, command)
+		sshcmd.RemoteCommand(i, command, getKey)
 		n++
 	}
 }
@@ -174,7 +174,7 @@ func help() string {
 	For production 
 		replace web > web-prd and app > app-prd
 
-	Production does not support -toggle`
+	Production does not support -toggle and -c commandline`
 	return helpMessage
 }
 
