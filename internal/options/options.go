@@ -142,6 +142,8 @@ func RemoteCMD(cmd string, g *Command, getKey []uint8) {
 		command = "sudo -S -u deploy /bin/bash -c '/apps/scripts/toggle_spcp_login.sh singpass Actual'"
 	} else if g.subNameII != "" {
 		log.Fatalln("Invalid option for toggle")
+	} else if g.name == "" {
+		log.Fatalln("Invalid option use")
 	}
 
 	n := 0
