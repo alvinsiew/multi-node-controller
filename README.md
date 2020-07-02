@@ -4,6 +4,14 @@ Multi-node-controller is a tool for issuing a command to multiple ec2 instances.
 
 ## How to start using
 
+1) Copy conf/config.yml to HOME_DIR/.aws/config.yml
+2) Update HOME_DIR/.aws/config.yml with the path to private key
+3) Add repo bin folder to PATH ENV in ur ~/.bash_profile or ~/.bashrc
+
+You now good to go!
+
+## Command Usage
+
 ```bash
 Usage:
         To issue commands:
@@ -20,7 +28,7 @@ Usage:
         For production
                 replace web > web-prd and app > app-prd
 
-        Production does not support -toggle and -c commandline
+        Production does not support -toggle
 ```
 
 ## Self-compile
