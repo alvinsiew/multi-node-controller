@@ -17,3 +17,4 @@ vendor/
 #Files to exclude
 config-copy.yaml
 cred-covid-support-grant
+copy.sh
