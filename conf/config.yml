@@ -2,3 +2,5 @@ conf:
 - userid: "ec2-user"
 - privatekey: "<Replace with full path to UAT private key>"
 - privatekeyprod: "<Replace with full path to PROD private key>"
+- sudopasswdenable: "enable"
+- sudopasswd: ""

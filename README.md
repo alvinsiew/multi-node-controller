@@ -28,6 +28,15 @@ Usage:
         To toggle SPCP:
                 mnc app -toggle <actual|stub>
 
+        To control Passenger
+                mnc app -passenger start|stop|restart|status
+
+        To control Delayed_Job
+                mnc app -delay start|stop|restart|status
+
+        To control Web Server
+                mnc app -nginx start|stop|restart|status
+
         To list IPs:
                 mnc web -l
                 mnc app -l

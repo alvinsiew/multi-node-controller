@@ -14,6 +14,8 @@ type ConfigSSH struct {
 	UserID         string `yaml:"userid"`
 	PrivateKey     string `yaml:"privatekey"`
 	PrivateKeyProd string `yaml:"privatekeyprod"`
+	SudoPasswd     string `yaml:"sudopasswd"`
+	SudoPasswdProd string `yaml:"sudopasswdprod"`
 }
 
 // Config struct for mnc config
