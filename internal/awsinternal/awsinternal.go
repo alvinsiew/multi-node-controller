@@ -54,13 +54,15 @@ func FilterInstances(filterName string) ([]string, []string) {
 
 	for _, r := range result.Reservations {
 		for _, i := range r.Instances {
-			for _, t := range i.Tags {
-				if *t.Key == "aws:autoscaling:groupName" {
-					names = append(names, (*t.Value))
+			if *i.State.Name == "running" {
+				for _, t := range i.Tags {
+					if *t.Key == "aws:autoscaling:groupName" {
+						names = append(names, (*t.Value))
+					}
 				}
-			}
-			for _, r := range i.NetworkInterfaces {
-				servers = append(servers, (*r.PrivateIpAddress))
+				for _, r := range i.NetworkInterfaces {
+					servers = append(servers, (*r.PrivateIpAddress))
+				}
 			}
 		}
 	}
