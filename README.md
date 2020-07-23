@@ -24,6 +24,7 @@ Usage:
         To issue commands:
                 mnc web -c < commandline >
                 mnc app -c < commandline >
+                mnc proxy -c < commandline >
 
         To toggle SPCP:
                 mnc app -toggle <actual|stub>
@@ -37,14 +38,24 @@ Usage:
         To control Web Server
                 mnc app -nginx start|stop|restart|status
 
+        To control Squid server
+                mnc proxy -squid start|stop|restart|status
+
+        To SSH to server
+                mnc web -ssh
+                mnc app -ssh
+                mnc proxy -ssh
+
         To list IPs:
                 mnc web -l
                 mnc app -l
+                mnc proxy -l
 
-        For production
+        For production 
                 replace web > web-prd and app > app-prd
 
         Production does not support -toggle
+You must pass a sub-command
 ```
 
 ## Self-compile

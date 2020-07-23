@@ -20,7 +20,9 @@ type Command struct {
 	toggleSingpass string
 	passenger      string
 	delayedjob     string
-	web 		   string
+	web            string
+	ssh            bool
+	squid          string
 }
 
 // WebCommand Contain flag command for uat web ec2 instances
@@ -32,6 +34,7 @@ func WebCommand() *Command {
 	gc.fs.StringVar(&gc.name, "c", "", "Command to be executed")
 	gc.fs.BoolVar(&gc.subName, "l", false, "List VMs IPs")
 	gc.fs.StringVar(&gc.web, "nginx", "", "start|stop|restart|status")
+	gc.fs.BoolVar(&gc.ssh, "ssh", false, "To connect to instance")
 	return gc
 }
 
@@ -44,6 +47,7 @@ func WebProdCommand() *Command {
 	gc.fs.StringVar(&gc.name, "c", "", "Command to be executed")
 	gc.fs.BoolVar(&gc.subName, "l", false, "List VMs IPs")
 	gc.fs.StringVar(&gc.web, "nginx", "", "start|stop|restart|status")
+	gc.fs.BoolVar(&gc.ssh, "ssh", false, "To connect to instance")
 
 	return gc
 }
@@ -59,6 +63,7 @@ func AppCommand() *Command {
 	gc.fs.StringVar(&gc.toggleSingpass, "toggle", "", "actual or stub for SPCP")
 	gc.fs.StringVar(&gc.passenger, "passenger", "", "start|stop|restart|status")
 	gc.fs.StringVar(&gc.delayedjob, "delay", "", "start|stop|restart|status")
+	gc.fs.BoolVar(&gc.ssh, "ssh", false, "To connect to instance")
 
 	return gc
 }
@@ -74,6 +79,7 @@ func AppProdCommand() *Command {
 	gc.fs.StringVar(&gc.toggleSingpass, "toggle", "", "actual or stub for SPCP")
 	gc.fs.StringVar(&gc.passenger, "passenger", "", "start|stop|restart|status")
 	gc.fs.StringVar(&gc.delayedjob, "delay", "", "start|stop|restart|status")
+	gc.fs.BoolVar(&gc.ssh, "ssh", false, "To connect to instance")
 
 	return gc
 }
@@ -86,6 +92,8 @@ func SquidCommand() *Command {
 
 	gc.fs.StringVar(&gc.name, "c", "", "Command to be executed")
 	gc.fs.BoolVar(&gc.subName, "l", false, "List VMs IPs")
+	gc.fs.StringVar(&gc.squid, "squid", "", "start|stop|restart|status")
+	gc.fs.BoolVar(&gc.ssh, "ssh", false, "To connect to instance")
 
 	return gc
 }
@@ -98,6 +106,8 @@ func SquidProdCommand() *Command {
 
 	gc.fs.StringVar(&gc.name, "c", "", "Command to be executed")
 	gc.fs.BoolVar(&gc.subName, "l", false, "List VMs IPs")
+	gc.fs.StringVar(&gc.squid, "squid", "", "start|stop|restart|status")
+	gc.fs.BoolVar(&gc.ssh, "ssh", false, "To connect to instance")
 
 	return gc
 }
@@ -133,41 +143,58 @@ func sudoPasswdProd() string {
 	return conf.Conf[4].SudoPasswdProd
 }
 
+func sudoUser() string {
+	conf := yamlcustom.ParseYAML()
+	return conf.Conf[0].UserID
+}
+
 // Parameter to decide encryption or decryption
 func (g *Command) Parameter() {
 	if g.Name() == "web" {
 		if g.subName == true {
 			ListIP("ec2*uat*web*")
+		} else if g.ssh == true {
+			ConnectSSH("ec2*uat*web*", sshcmd.GetKeyUat())
 		} else {
 			RemoteCMD("ec2*uat*web*", g, sshcmd.GetKeyUat(), sudoPasswdUAT())
 		}
 	} else if g.Name() == "app" {
 		if g.subName == true {
 			ListIP("ec2*uat*app*")
+		} else if g.ssh == true {
+			ConnectSSH("ec2*uat*app*", sshcmd.GetKeyUat())
 		} else {
 			RemoteCMD("ec2*uat*app*", g, sshcmd.GetKeyUat(), sudoPasswdUAT())
 		}
 	} else if g.Name() == "proxy" {
 		if g.subName == true {
 			ListIP("ec2*uat*proxy*")
+		} else if g.ssh == true {
+			ConnectSSH("ec2*uat*proxy*", sshcmd.GetKeyUat())
 		} else {
-			RemoteCMD("ec2*uat*proxy*", g, sshcmd.GetKeyProd(), sudoPasswdUAT())
+			RemoteCMD("ec2*uat*proxy*", g, sshcmd.GetKeyUat(), sudoPasswdUAT())
 		}
 	} else if g.Name() == "web-prd" {
 		if g.subName == true {
 			ListIP("ec2*prd*web*")
+		} else if g.ssh == true {
+			ConnectSSH("ec2*prd*web*", sshcmd.GetKeyProd())
 		} else {
 			RemoteCMD("ec2*prd*web*", g, sshcmd.GetKeyProd(), sudoPasswdProd())
 		}
 	} else if g.Name() == "app-prd" {
 		if g.subName == true {
 			ListIP("ec2*prd*app*")
+		} else if g.ssh == true {
+			ConnectSSH("ec2*prd*app*", sshcmd.GetKeyProd())
 		} else {
 			RemoteCMD("ec2*prd*app*", g, sshcmd.GetKeyProd(), sudoPasswdProd())
 		}
 	} else if g.Name() == "proxy-prd" {
 		if g.subName == true {
 			ListIP("ec2*prd*proxy*")
+		} else if g.ssh == true {
+			ConnectSSH("ec2*prd*proxy*", sshcmd.GetKeyProd())
 		} else {
 			RemoteCMD("ec2*prd*proxy*", g, sshcmd.GetKeyProd(), sudoPasswdProd())
 		}
@@ -228,6 +255,14 @@ func RemoteCMD(cmd string, g *Command, getKey []uint8, sudopass string) {
 		command = "echo " + sudopass + " | sudo -S systemctl status nginx"
 	} else if g.web != "" {
 		log.Fatalln("Invalid option for nginx")
+	} else if g.squid == "stop" {
+		command = "echo " + sudopass + " | sudo -S systemctl stop squid"
+	} else if g.squid == "start" {
+		command = "echo " + sudopass + " | sudo -S systemctl start squid"
+	} else if g.squid == "restart" {
+		command = "echo " + sudopass + " | sudo -S systemctl restart squid"
+	} else if g.squid == "status" {
+		command = "echo " + sudopass + " | sudo -S systemctl status squid"
 	} else if g.name == "" {
 		log.Fatalln("Invalid option use")
 	}
@@ -242,6 +277,24 @@ func RemoteCMD(cmd string, g *Command, getKey []uint8, sudopass string) {
 	}
 }
 
+// ConnectSSH will issue command to filter VMs
+func ConnectSSH(cmd string, getKey []uint8) {
+	var answer string
+	n := 0
+	ipAdr, name := awsinternal.FilterInstances(cmd)
+
+	for _, i := range ipAdr {
+		fmt.Println("Do you want to ssh " + name[n] + "? (yes/y to connect)")
+		fmt.Scanf("%s", &answer)
+
+		if answer == "yes" || answer == "y" {
+			sshcmd.TerminalConn("", i, getKey)
+			os.Exit(0)
+		}
+		n++
+	}
+}
+
 // Runner to run function with same method
 type Runner interface {
 	Init([]string) error
@@ -250,10 +303,11 @@ type Runner interface {
 }
 
 func help() string {
-	helpMessage := `Usage: 
+	helpMessage := `Usage:
 	To issue commands:
 		mnc web -c < commandline >
 		mnc app -c < commandline >
+		mnc proxy -c < commandline >
 	
 	To toggle SPCP:
 		mnc app -toggle <actual|stub>
@@ -266,10 +320,19 @@ func help() string {
 
 	To control Web Server
 		mnc app -nginx start|stop|restart|status
+
+	To control Squid server
+		mnc proxy -squid start|stop|restart|status
+
+	To SSH to server
+		mnc web -ssh
+		mnc app -ssh
+		mnc proxy -ssh
 	
 	To list IPs:
 		mnc web -l
 		mnc app -l
+		mnc proxy -l
 	
 	For production 
 		replace web > web-prd and app > app-prd
