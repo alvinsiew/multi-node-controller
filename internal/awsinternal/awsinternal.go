@@ -52,11 +52,12 @@ func FilterInstances(filterName string) ([]string, []string) {
 		
 	}
 
+	// fmt.Println(result.Reservations)
 	for _, r := range result.Reservations {
 		for _, i := range r.Instances {
 			if *i.State.Name == "running" {
 				for _, t := range i.Tags {
-					if *t.Key == "aws:autoscaling:groupName" {
+					if *t.Key == "Name" {
 						names = append(names, (*t.Value))
 					}
 				}

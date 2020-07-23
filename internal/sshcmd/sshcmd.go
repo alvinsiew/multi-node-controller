@@ -75,9 +75,14 @@ func RemoteCommand(ip string, cmd string,getKey []uint8) {
 	// Once a Session is created, you can execute a single command on
 	// the remote side using the Run method.
 	var b bytes.Buffer
+	var e bytes.Buffer
 	session.Stdout = &b
+	session.Stderr = &e
+	// session.Stderr = &b
 	if err := session.Run(cmd); err != nil {
-		log.Fatal("Failed to run: " + err.Error())
+		// log.Fatal("Failed to run: " + err.Error())
+		fmt.Println(e.String())
 	}
+	// session.Run(cmd)
 	fmt.Println(b.String())
 }

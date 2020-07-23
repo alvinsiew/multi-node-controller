@@ -78,6 +78,30 @@ func AppProdCommand() *Command {
 	return gc
 }
 
+// SquidCommand Contain flag command for squid uat ec2 instance
+func SquidCommand() *Command {
+	gc := &Command{
+		fs: flag.NewFlagSet("proxy", flag.ContinueOnError),
+	}
+
+	gc.fs.StringVar(&gc.name, "c", "", "Command to be executed")
+	gc.fs.BoolVar(&gc.subName, "l", false, "List VMs IPs")
+
+	return gc
+}
+
+// SquidProdCommand Contain flag command for squid prod ec2 instance
+func SquidProdCommand() *Command {
+	gc := &Command{
+		fs: flag.NewFlagSet("proxy-prd", flag.ContinueOnError),
+	}
+
+	gc.fs.StringVar(&gc.name, "c", "", "Command to be executed")
+	gc.fs.BoolVar(&gc.subName, "l", false, "List VMs IPs")
+
+	return gc
+}
+
 // HelpCommand for help paramter
 func HelpCommand() *Command {
 	gc := &Command{
@@ -106,7 +130,7 @@ func sudoPasswdUAT() string {
 func sudoPasswdProd() string {
 	conf := yamlcustom.ParseYAML()
 
-	return conf.Conf[4].SudoPasswd
+	return conf.Conf[4].SudoPasswdProd
 }
 
 // Parameter to decide encryption or decryption
@@ -123,6 +147,12 @@ func (g *Command) Parameter() {
 		} else {
 			RemoteCMD("ec2*uat*app*", g, sshcmd.GetKeyUat(), sudoPasswdUAT())
 		}
+	} else if g.Name() == "proxy" {
+		if g.subName == true {
+			ListIP("ec2*uat*proxy*")
+		} else {
+			RemoteCMD("ec2*uat*proxy*", g, sshcmd.GetKeyProd(), sudoPasswdUAT())
+		}
 	} else if g.Name() == "web-prd" {
 		if g.subName == true {
 			ListIP("ec2*prd*web*")
@@ -134,6 +164,12 @@ func (g *Command) Parameter() {
 			ListIP("ec2*prd*app*")
 		} else {
 			RemoteCMD("ec2*prd*app*", g, sshcmd.GetKeyProd(), sudoPasswdProd())
+		}
+	} else if g.Name() == "proxy-prd" {
+		if g.subName == true {
+			ListIP("ec2*prd*proxy*")
+		} else {
+			RemoteCMD("ec2*prd*proxy*", g, sshcmd.GetKeyProd(), sudoPasswdProd())
 		}
 	} else if g.Name() == "help" {
 		fmt.Println(help())
@@ -256,6 +292,8 @@ func Root(args []string) error {
 		AppCommand(),
 		AppProdCommand(),
 		HelpCommand(),
+		SquidCommand(),
+		SquidProdCommand(),
 	}
 
 	subcommand := os.Args[1]
