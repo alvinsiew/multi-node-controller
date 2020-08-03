@@ -1,6 +1,7 @@
 conf:
-- userid: "ec2-user"
+- userid: "csg-devops"
 - privatekey: "<Replace with full path to UAT private key>"
 - privatekeyprod: "<Replace with full path to PROD private key>"
 - sudopasswd: "<sudo password for UAT>"
 - sudopasswdprod: "<sudo password for PROD>"
+- sshuserid: "deploy"

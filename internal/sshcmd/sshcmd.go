@@ -102,7 +102,7 @@ func TerminalConn(pass string, ip string, getKey []uint8) error {
 
 	conf := yamlcustom.ParseYAML()
 
-	config, err := ClientConfig(conf.Conf[0].UserID, getKey, pass)
+	config, err := ClientConfig(conf.Conf[5].SSHUserID, getKey, pass)
 	if err != nil {
 		panic("Failed to pass client config: " + err.Error())
 	}

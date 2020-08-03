@@ -319,7 +319,7 @@ func help() string {
 		mnc app -delay start|stop|restart|status
 
 	To control Web Server
-		mnc app -nginx start|stop|restart|status
+		mnc web -nginx start|stop|restart|status
 
 	To control Squid server
 		mnc proxy -squid start|stop|restart|status
