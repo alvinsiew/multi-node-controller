@@ -25,6 +25,19 @@ type Command struct {
 	squid          string
 }
 
+// DebugCommand Contain flag command for uat web ec2 instances
+func DebugCommand() *Command {
+	gc := &Command{
+		fs: flag.NewFlagSet("debug", flag.ContinueOnError),
+	}
+
+	// gc.fs.StringVar(&gc.name, "c", "", "Command to be executed")
+	// gc.fs.BoolVar(&gc.subName, "l", false, "List VMs IPs")
+	// gc.fs.StringVar(&gc.web, "nginx", "", "start|stop|restart|status")
+	// gc.fs.BoolVar(&gc.ssh, "ssh", false, "To connect to instance")
+	return gc
+}
+
 // WebCommand Contain flag command for uat web ec2 instances
 func WebCommand() *Command {
 	gc := &Command{
@@ -198,6 +211,10 @@ func (g *Command) Parameter() {
 		} else {
 			RemoteCMD("ec2*prd*proxy*", g, sshcmd.GetKeyProd(), sudoPasswdProd())
 		}
+	} else if g.Name() == "debug" {
+		fmt.Println("Prod password: " + sudoPasswdProd())
+		fmt.Println("UAT password: " + sudoPasswdUAT())
+		fmt.Println("Sudoer ID: " + sudoUser())
 	} else if g.Name() == "help" {
 		fmt.Println(help())
 	}
@@ -337,7 +354,11 @@ func help() string {
 	For production 
 		replace web > web-prd and app > app-prd
 
-	Production does not support -toggle`
+	Production does not support -toggle
+	
+	For Debugging
+		mnc debug`
+	
 	return helpMessage
 }
 
@@ -357,6 +378,7 @@ func Root(args []string) error {
 		HelpCommand(),
 		SquidCommand(),
 		SquidProdCommand(),
+		DebugCommand(),
 	}
 
 	subcommand := os.Args[1]
